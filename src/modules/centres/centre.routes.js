@@ -7,6 +7,7 @@ import { AppError } from "../../utils/app-error.js";
 import { SeatAllocation } from "../allocations/seatAllocation.model.js";
 import { Centre } from "./centre.model.js";
 import {
+  bulkImportCentresSchema,
   bulkImportTerminalsSchema,
   heartbeatSchema,
   normalizeMac,
@@ -47,6 +48,42 @@ centreRoutes.post(
       { new: true, upsert: true, runValidators: true },
     );
     res.status(201).json({ centre });
+  },
+);
+
+centreRoutes.post(
+  "/bulk-import",
+  authenticate,
+  requireRole("admin"),
+  validate({ body: bulkImportCentresSchema }),
+  async (req, res) => {
+    const { rows } = req.validated.body;
+    let inserted = 0;
+    let updated = 0;
+    const failed = [];
+
+    for (let i = 0; i < rows.length; i++) {
+      const parsed = upsertCentreSchema.safeParse(rows[i]);
+      if (!parsed.success) {
+        failed.push({
+          row: i + 1,
+          reason: parsed.error.issues.map((iss) => `${iss.path.join(".")}: ${iss.message}`).join("; "),
+        });
+        continue;
+      }
+
+      const existing = await Centre.findOne({ code: parsed.data.code });
+      if (existing) {
+        Object.assign(existing, parsed.data);
+        await existing.save();
+        updated++;
+      } else {
+        await Centre.create(parsed.data);
+        inserted++;
+      }
+    }
+
+    res.json({ inserted, updated, failed });
   },
 );
 

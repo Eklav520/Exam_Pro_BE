@@ -26,6 +26,15 @@ const terminalSchema = new mongoose.Schema(
       uppercase: true,
       trim: true,
     },
+    labRoom: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    isBuffer: {
+      type: Boolean,
+      default: false,
+    },
     ipv4Address: {
       type: String,
       required: true,

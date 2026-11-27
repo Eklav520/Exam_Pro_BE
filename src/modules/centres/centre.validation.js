@@ -18,18 +18,30 @@ export const upsertCentreSchema = z.object({
   code: z.string().trim().min(2).max(20).transform((v) => v.toUpperCase()),
   name: z.string().trim().min(2).max(120),
   city: z.string().trim().max(80).optional().default(""),
+  state: z.string().trim().max(80).optional().default(""),
+  district: z.string().trim().max(80).optional().default(""),
+  mandal: z.string().trim().max(80).optional().default(""),
+  pincode: z.string().trim().max(12).optional().default(""),
   address: z.string().trim().max(240).optional().default(""),
+  totalSystems: z.coerce.number().int().min(0).optional().default(0),
+  bufferSystems: z.coerce.number().int().min(0).optional().default(0),
   allowedSubnets: z.array(z.string().trim()).optional().default([]),
   isActive: z.boolean().optional().default(true),
+});
+
+export const bulkImportCentresSchema = z.object({
+  rows: z.array(z.record(z.string(), z.unknown())).min(1, "At least one row is required"),
 });
 
 export const registerTerminalSchema = z.object({
   centreCode: z.string().trim().min(2).max(20).transform((v) => v.toUpperCase()),
   centreName: z.string().trim().min(2).max(120).optional(),
+  labRoom: z.string().trim().max(60).optional().default(""),
   seatNumber: z.string().trim().min(1).max(20).transform((v) => v.toUpperCase()),
   systemId: z.string().trim().min(2).max(40).transform((v) => v.toUpperCase()),
   ipv4Address: ipv4Schema,
   macAddress: macSchema,
+  isBuffer: z.boolean().optional().default(false),
 });
 
 export const bulkImportTerminalsSchema = z.object({

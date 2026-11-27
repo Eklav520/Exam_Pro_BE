@@ -19,10 +19,40 @@ const centreSchema = new mongoose.Schema(
       default: "",
       trim: true,
     },
+    state: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    district: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    mandal: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    pincode: {
+      type: String,
+      default: "",
+      trim: true,
+    },
     address: {
       type: String,
       default: "",
       trim: true,
+    },
+    totalSystems: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    bufferSystems: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
     allowedSubnets: {
       type: [String],
